@@ -48,14 +48,13 @@ app.post('/search', urlencodedParsed, (req, res) =>{
 			throw err;
 			}
 			const users = JSON.parse(data);
-			console.log('data is geparsed vriend')
-
 
 			for (var i = 0; i < users.length; i++) {
-				console.log('Looping')
-				// if (firstName === req.body.firstName[i] && lastName === req.body.lastName[i]) {
-				// console.log('Yeahbuddy!')
-				// }
+				if (name === users[i].firstname) {
+					console.log('Match first name')
+				} else if(name === users[i].lastname) {
+						console.log("Match last name")
+				}			
 			}
 		
 	})
@@ -73,3 +72,33 @@ app.post('/search', urlencodedParsed, (req, res) =>{
 app.listen(3000, () => {
 	console.log("Ready, set, GO!")
 })
+
+
+
+
+
+// app.post('/search', urlencodedParsed, (req, res) =>{
+// 	var name=req.body.name;
+// 	var htmlData = 'Hello: ' + name;
+// 		fs.readFile('./users.json', 'utf8', (err, data) => {
+// 			if (err) {
+// 			throw err;
+// 			}
+// 			const users = JSON.parse(data);
+
+// 			for (var i = 0; i < users.length; i++) {
+// 				if (name === users[i].firstname) {
+// 					console.log('Match first name')
+// 				} else if(name === users[i].lastname) {
+// 						console.log("Match last name")
+// 				}			
+// 			}
+		
+// 	})
+
+// 	res.send(htmlData)
+// 	console.log(htmlData)
+
+	
+// })
+

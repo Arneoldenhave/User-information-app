@@ -2,23 +2,17 @@ const express = require('express');
 const fs = require('fs');
 const bodyParser = require('body-parser')
 const app = express();
+// const fs = writeFileSync()
 
+//app.use(bodyParser)
+app.use(bodyParser.json());
+ const urlencodedParsed = bodyParser.urlencoded ({extended : true})
 
-// app.use(bodyParser)
-const urlencodedParsed = bodyParser.urlencoded ({extended : true})
-
-// app.use(bodyPArser.urlencoded({
-// 	extended: false;
-// }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
 
-//Third:Redirect page
-app.get('/compare', (req, res) => {
-	res.render ('compare')
-	console.log('arriving at redirect')
-})
 
 
 
@@ -43,6 +37,24 @@ app.get('/search', (req, res) => {
 	
 });
 
+
+//Third:Redirect page
+app.get('/compare', (req, res) => {
+	res.render ('compare')
+	console.log('arriving at redirect')
+})
+
+//Fourth: not the droid we are looking for
+app.get('/notdroid', (req, res) => {
+	res.render ('notDroid')
+})
+
+//Fihth: Add user
+app.get('/addUser', (req, res) => {
+	res.render ('addUser')
+})
+
+
 //Name comparerer
 app.post('/search', urlencodedParsed, (req, res) =>{
 	var name=req.body.name;
@@ -58,60 +70,49 @@ app.post('/search', urlencodedParsed, (req, res) =>{
 				if (name === users[i].firstname || name === users[i].lastname) {
 					theOne = users[i]
 					console.log("Welcome: "+users[i].firstname + " " + users[i].lastname + " Email: " + users[i].email)
-					// res.redirect('/compare')
+				} else { 
+					res.render('notDroid')
 				} 
-				// else if(name === users[i].lastname) {
-				// 	console.log("Welcome: "+users[i].firstname + " " + users[i].lastname + " Email: " + users[i].email)
-				// }			
 			}
-			//hier wil je het doorgeven
 			console.log(theOne)
 			res.render('compare', {neo:theOne})
-		})
-
-	// res.redirect('/compare')
-	// console.log(htmlData)
-
-	
+	})
 })
 
-//Redirect page
-// app.get('/compare', (req, res) => {
-// 	res.render ('compare')
-// 	console.log('arriving at redirect')
-// })
+//new user
+
+app.post('/addUser', (req, res)=> {
+	var firstName=req.body.firstName;
+	var lastName=req.body.lastName;
+	var email=req.body.email; 
+	var user = {
+		firstName: req.body.firstName,
+		lastName: req.body.lastName,
+		email: req.body.email
+	}
+console.log(user)
+
+		// fs.readFile('./users.json', 'utf8', (err, data)=> {
+		// 	if (err) {
+		// 		throw err
+		// 	}
+		// 	const users = JSON.parse(data);
+		// 	for (var i = 0; i < users.length; i++) {
+		// 		if (firstName !== users[i].firstName || lastName !== users[i].lastName) {
+		// 			console.log("Welcome: "+ firstName + " " + lastName + " Email: " + email)
+		// 		} 
+		// 	}
+		// 	console.log(firstname, lastname, email)
+		// })
+})
+
+
+
+
 
 //Port selector
 app.listen(3000, () => {
 	console.log("Ready, set, GO!")
 })
 
-
-
-
-
-// app.post('/search', urlencodedParsed, (req, res) =>{
-// 	var name=req.body.name;
-// 	var htmlData = 'Hello: ' + name;
-// 		fs.readFile('./users.json', 'utf8', (err, data) => {
-// 			if (err) {
-// 			throw err;
-// 			}
-// 			const users = JSON.parse(data);
-
-// 			for (var i = 0; i < users.length; i++) {
-// 				if (name === users[i].firstname) {
-// 					console.log('Match first name')
-// 				} else if(name === users[i].lastname) {
-// 						console.log("Match last name")
-// 				}			
-// 			}
-		
-// 	})
-
-// 	res.send(htmlData)
-// 	console.log(htmlData)
-
-	
-// })
 

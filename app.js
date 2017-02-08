@@ -6,7 +6,7 @@ const app = express();
 
 //app.use(bodyParser)
 app.use(bodyParser.json());
- const urlencodedParsed = bodyParser.urlencoded ({extended : true})
+// const urlencodedParsed = bodyParser.urlencoded ({extended : true})
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -24,6 +24,7 @@ app.get('/', (req, res)=> {
 		}
 		const users = JSON.parse(data);
 		res.render ('index', {users : users})
+		//render(view, local object object: data)
 
 	});
 
@@ -45,52 +46,93 @@ app.get('/compare', (req, res) => {
 })
 
 //Fourth: not the droid we are looking for
-app.get('/notdroid', (req, res) => {
+app.get('/notDroid', (req, res) => {
 	res.render ('notDroid')
 })
 
 //Fihth: Add user
 app.get('/addUser', (req, res) => {
+	console.log('addUser called!')
 	res.render ('addUser')
 })
 
 
+
+//Sixth: if users already exists
+app.get('/oops', (req, res) => {
+	res.render ('oops')
+})
+
 //Name comparerer
-app.post('/search', urlencodedParsed, (req, res) =>{
+app.post('/search', (req, res) =>{
 	var name=req.body.name;
 	var htmlData = 'Hello: ' + name;
-		fs.readFile('./users.json', 'utf8', (err, data) => {
-			if (err) {
-				throw err;
+	fs.readFile('./users.json', 'utf8', (err, data) => {
+		if (err) {
+			throw err;
+		}
+		const users = JSON.parse(data);
+		let theOne = "";
+			
+		for (var i = 0; i < users.length; i++) {
+			if (name === users[i].firstname || name === users[i].lastname) {
+				console.log('TRIGGERRREEEDD!')
+				theOne = users[i]
+				res.send("Welcome: "+users[i].firstname + " " + users[i].lastname + " Email: " + users[i].email)
+			} 
+			else { 
+				console.log('triggered')
 			}
-			const users = JSON.parse(data);
-
-			let theOne = "";
-			for (var i = 0; i < users.length; i++) {
-				if (name === users[i].firstname || name === users[i].lastname) {
-					theOne = users[i]
-					console.log("Welcome: "+users[i].firstname + " " + users[i].lastname + " Email: " + users[i].email)
-				} else { 
-					res.render('notDroid')
-				} 
-			}
-			console.log(theOne)
-			res.render('compare', {neo:theOne})
+		}
+		if (theOne === "") {
+			res.render('notDroid')
+		}
+		console.log(theOne)
 	})
 })
 
 //new user
-
 app.post('/addUser', (req, res)=> {
-	var firstName=req.body.firstName;
-	var lastName=req.body.lastName;
-	var email=req.body.email; 
+	// var firstName = req.body.firstName
+	// var lastName = req.body.lastName
+	// var email = req.body.email
+
 	var user = {
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		email: req.body.email
-	}
-console.log(user)
+		firstname: req.body.firstName,
+		lastname: req.body.lastName,
+		email: req.body.email,
+	}	
+// check if already in database
+
+	fs.readFile('./users.json', 'utf8', (err, data) => { //check
+		if (err) throw err;
+		var users =JSON.parse(data)
+		for (var i = 0; i < users.length; i++) { // check: 124
+			if (user.firstname === users[i].firstName || user.lastname === users[i].lastName || user.email === users[i].email) {
+					res.render('oops')
+			} //closes if
+			else { 
+				var users = JSON.parse(data);
+				users.push(user)
+				users = JSON.stringify(users)
+			// if not in database it will write a file(for now)
+				fs.writeFile('./users.json', users, 'utf-8', (err) => {
+					if (err) throw err
+						users = JSON.parse(users)
+						res.render('index', {users : users});
+
+					}) //for loop 
+				} //write file
+			} //else
+	}) // fs.readfile
+}) //app.post
+
+
+
+// JSON.stringify(user) 
+	// console.log(user.lastName)
+
+
 
 		// fs.readFile('./users.json', 'utf8', (err, data)=> {
 		// 	if (err) {
@@ -100,12 +142,41 @@ console.log(user)
 		// 	for (var i = 0; i < users.length; i++) {
 		// 		if (firstName !== users[i].firstName || lastName !== users[i].lastName) {
 		// 			console.log("Welcome: "+ firstName + " " + lastName + " Email: " + email)
-		// 		} 
+		// 		} droid
 		// 	}
 		// 	console.log(firstname, lastname, email)
 		// })
-})
+// })
 
+
+// 	fs.readFile('./users.json', 'utf8', (err, data) => {
+// 		if (err) throw err;
+// // check if already in database
+// 			var users = JSON.parse(data);
+// 			console.log(users)
+// 		// for (var i = 0; i < users.length; i++) {
+// 		// 	if (firstName === users[i].firstName || lastName === users[i].lastName || email === users[i].email) {
+// 		// 			res.render('oops')
+// 		// 	}
+// 		// 	else { 
+// 			users.push(user)
+// 			console.log(users)
+// 			users = JSON.stringify(users)
+// 			console.log(users)
+// 			// if not in database it will write a file(for now)
+// 			fs.writeFile('./usersTest2.json', users, 'utf-8', (err) => {
+// 				if (err) {
+// 					throw err;
+// 				}
+// 			}) //for loop 
+// 		// }// else stament	
+// 	// }// if loop
+// 			console.log(users[0])
+// 	}) // fs.readfile
+// }) //app.post
+
+// JSON.stringify(user) 
+	// console.log(user.lastName)
 
 
 

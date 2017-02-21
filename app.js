@@ -93,9 +93,6 @@ app.post('/search', (req, res) =>{
 
 //new user
 app.post('/addUser', (req, res)=> {
-	// var firstName = req.body.firstName
-	// var lastName = req.body.lastName
-	// var email = req.body.email
 
 	var user = {
 		firstname: req.body.firstName,
@@ -106,26 +103,32 @@ app.post('/addUser', (req, res)=> {
 
 	fs.readFile('./users.json', 'utf8', (err, data) => { //check
 		if (err) throw err;
+		
 		var users =JSON.parse(data)
+		console.log('data parsed 1')
+		
 		for (var i = 0; i < users.length; i++) { // check: 124
+			console.log("for loop users.length triggered")
+			
 			if (user.firstname === users[i].firstName || user.lastname === users[i].lastName || user.email === users[i].email) {
-					res.render('oops')
-			} //closes if
-			else { 
-				var users = JSON.parse(data);
-				users.push(user)
-				users = JSON.stringify(users)
-			// if not in database it will write a file(for now)
-				fs.writeFile('./users.json', users, 'utf-8', (err) => {
-					if (err) throw err
-						users = JSON.parse(users)
-						res.render('index', {users : users});
+				res.render('oops')
+				console.log("check database IF STATEMENT")
+			} //closes if				
+		}//closes for loop
 
-					}) //for loop 
-				} //write file
-			} //else
+
+		var users = JSON.parse(data);
+		users.push(user);
+		users = JSON.stringify(users)
+		fs.writeFile('./users.json', users, 'utf-8', (err) => {
+			if (err) throw err
+			console.log("writeFile users ")
+			users = JSON.parse(users)
+			res.redirect('/');
+			
+		})//writefile
 	}) // fs.readfile
-}) //app.post
+})//app.post
 
 
 
